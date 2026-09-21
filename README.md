@@ -32,10 +32,8 @@ Dicoding Username: jaluprayoga
 
 ## Table of Contents
 - [Project Overview](#project-overview)
-- [Pipeline Architecture](#pipeline-architecture)
-- [Repository Structure](#repository-structure)
 - [Prerequisites & Environment Requirements](#prerequisites--environment-requirements)
-- [Step-by-Step Reproduction Guide (Run on Any Device)](#step-by-step-reproduction-guide-run-on-any-device)
+- [Installation](#installation)
   - [1. Clone Repository](#1-clone-repository)
   - [2. Setup Virtual Environment](#2-setup-virtual-environment)
   - [3. Install Dependencies](#3-install-dependencies)
@@ -53,8 +51,7 @@ Dicoding Username: jaluprayoga
   - [Interactive Testing via Jupyter Notebook](#interactive-testing-via-jupyter-notebook)
 - [Monitoring & Observability Setup](#monitoring--observability-setup)
 - [Visual Proof & Screenshots](#visual-proof--screenshots)
-- [How to Upload to Your GitHub](#how-to-upload-to-your-github)
-- [License](#license)
+
 
 ---
 
@@ -71,80 +68,6 @@ The system is engineered using **TensorFlow Extended (TFX)** orchestrated with *
 
 ---
 
-## Pipeline Architecture
-
-```mermaid
-flowchart TD
-    A[Raw Data: Pima Indians Diabetes CSV] --> B[CsvExampleGen]
-    B --> C[StatisticsGen]
-    C --> D[SchemaGen]
-    D --> E[ExampleValidator]
-    B --> F[Transform: tf.transform]
-    D --> F
-    F --> G[Tuner: KerasTuner]
-    D --> G
-    F --> H[Trainer: tf.keras MLP]
-    G --> H
-    D --> H
-    H --> I[Resolver: Latest Blessed Model]
-    H --> J[Evaluator: TFMA Validation Gates]
-    I --> J
-    B --> J
-    J -->|Recall >= 0.70 & Accuracy >= 0.60| K[Pusher]
-    K --> L[serving_model / SavedModel]
-    L --> M[TF Serving Container / FastAPI App]
-    M --> N[Prometheus Scraper]
-    N --> O[Grafana Dashboard]
-```
-
----
-
-## Repository Structure
-
-```text
-├── data/                               # Dataset folder
-│   └── diabetes.csv                    # Pima Indians Diabetes dataset (768 records)
-├── modules/                            # Core TFX pipeline component modules
-│   ├── __init__.py                     # Package initializer
-│   ├── components.py                   # TFX component graph definition
-│   ├── pipeline.py                     # Pipeline DAG initialization with Beam
-│   ├── trainer.py                      # Keras model architecture, training loop & export
-│   ├── transform.py                    # Feature preprocessing & Z-score scaling (TFT)
-│   ├── tuner.py                        # Hyperparameter search space & KerasTuner tuner
-│   └── utils.py                        # Shared feature constants and helpers
-├── monitoring/                         # Observability stack configuration
-│   ├── Dockerfile                      # Prometheus container build file
-│   ├── grafana-dashboard.json          # Pre-configured Grafana metrics dashboard
-│   ├── prometheus.config               # TF Serving prometheus exporter config
-│   ├── prometheus.yml                  # Prometheus scrape configuration
-│   ├── jaluprayoga-grafana-dashboard.png # Grafana dashboard screenshot
-│   └── jaluprayoga-monitoring.png      # Prometheus Target UP status screenshot
-├── serving/                            # Alternative FastAPI model serving microservice
-│   ├── app.py                          # FastAPI REST API implementation
-│   ├── Dockerfile                      # Serving Docker container build file
-│   └── requirements.txt                # Serving specific dependencies
-├── serving_model/                      # Exported blessed TensorFlow SavedModel
-│   └── 1789238603/                     # Timestamped model version artifact
-│       ├── saved_model.pb              # Computational graph definition
-│       └── variables/                  # Trained model weights
-├── download_dataset.py                 # Automated dataset downloader
-├── run_pipeline.py                     # TFX Apache Beam pipeline runner
-├── pylint_check.py                     # Clean code audit script (scores 10/10)
-├── jaluprayoga-notebook.ipynb          # Interactive pipeline development notebook
-├── jaluprayoga-testing.ipynb           # Model REST API testing notebook
-├── jaluprayoga-deployment.png          # Railway deployment screenshot
-├── jaluprayoga-pylint.png              # Pylint 10/10 audit screenshot
-├── Dockerfile                          # TensorFlow Serving container Dockerfile
-├── docker-compose.yml                  # Multi-container orchestration (Serving + Prometheus + Grafana)
-├── .env.example                        # Environment variables template
-├── .dockerignore                       # Docker build exclusions
-├── .gitignore                          # Git tracking exclusions
-├── LICENSE                             # MIT License
-├── README.md                           # Documentation & Dicoding submission
-└── requirements.txt                    # Project Python dependencies
-```
-
----
 
 ## Prerequisites & Environment Requirements
 
@@ -159,7 +82,7 @@ To replicate and run this project seamlessly on another computer:
 
 ---
 
-## Step-by-Step Reproduction Guide (Run on Any Device)
+## Installation
 
 ### 1. Clone Repository
 
@@ -419,35 +342,3 @@ jupyter notebook jaluprayoga-testing.ipynb
 ![Grafana Dashboard](monitoring/jaluprayoga-grafana-dashboard.png)
 
 ---
-
-## How to Upload to Your GitHub
-
-Follow these steps to initialize and push this project to your GitHub repository:
-
-```bash
-# 1. Initialize git repository (if not already initialized)
-git init
-
-# 2. Stage all project files (ignoring files configured in .gitignore)
-git add .
-
-# 3. Create initial commit
-git commit -m "feat: complete end-to-end diabetes prediction TFX MLOps pipeline"
-
-# 4. Set main branch
-git branch -M main
-
-# 5. Link your GitHub remote repository
-git remote add origin https://github.com/<your-username>/<your-repo-name>.git
-
-# 6. Push to GitHub
-git push -u origin main
-```
-
----
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-Developed with by **Jalu Prayoga** for the **Dicoding MLOps Specialization: Proyek Pengembangan dan Pengoperasian Sistem Machine Learning**.
