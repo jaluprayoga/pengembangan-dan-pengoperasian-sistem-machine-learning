@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  # TensorFlow Serving Model Inference Service
+  tf-serving:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: diabetes-tf-serving
+    ports:
+      - "8501:8501" # REST API & Prometheus metrics endpoint
+      - "8500:8500" # gRPC API endpoint
+    environment:
+      - MODEL_NAME=diabetes-model
+      - PORT=8501
+      - MONITORING_CONFIG=/model_config/prometheus.config
+    restart: unless-stopped
+
+  # Prometheus Real-time Metrics Scraper
+  prometheus:
+    build:
+      context: ./monitoring
+      dockerfile: Dockerfile
+    container_name: diabetes-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    restart: unless-stopped
+    depends_on:
+      - tf-serving
+
+  # Grafana Dashboard Visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: diabetes-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    restart: unless-stopped
+    depends_on:
+      - prometheus

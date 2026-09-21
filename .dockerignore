@@ -1,0 +1,23 @@
+# Virtual Environment
+venv/
+.venv/
+env/
+
+# Git
+.git/
+.gitignore
+
+# Python Cache
+__pycache__/
+*.py[cod]
+
+# Jupyter Notebooks & Pipeline execution data (not needed inside serving container)
+*.ipynb
+jaluprayoga-pipeline/
+data/
+pylint_check.py
+download_dataset.py
+*.png
+
+# Monitoring local TSDB runtime data
+monitoring/data/
